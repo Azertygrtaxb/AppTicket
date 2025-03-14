@@ -20,6 +20,9 @@ class User(Base):
     created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
     is_active = Column(TINYINT(1), server_default=text("'1'"))
 
+    def get_id(self):  
+        return str(self.user_id)
+
 
 class Category(Base):
     __tablename__ = 'categories'

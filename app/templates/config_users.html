@@ -17,7 +17,7 @@
         <i class="fas fa-user-plus"></i> Ajouter un nouvel utilisateur
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ url_for('base.add_user') }}">
+        <form method="POST" action="{{ url_for('base_route.add_user') }}">
             <div class="row">
                 <div class="form-group">
                     <label for="username">Nom d'utilisateur</label>
@@ -84,7 +84,7 @@
                             </span>
                         </td>
                         <td>
-                            <a href="{{ url_for('base.edit_user', user_id=user.id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ url_for('base_route.edit_user', user_id=user.id) }}" class="btn btn-sm btn-primary">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <button class="btn btn-sm btn-danger" onclick="confirmDelete('{{ user.id }}', '{{ user.username }}')">
@@ -102,7 +102,7 @@
 <script>
     function confirmDelete(userId, username) {
         if (confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${username} ?`)) {
-            window.location.href = `{{ url_for('base.delete_user', user_id='') }}${userId}`;
+            window.location.href = `{{ url_for('base_route.delete_user', user_id='') }}${userId}`;
         }
     }
 </script>

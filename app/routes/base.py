@@ -1,9 +1,7 @@
 from flask import Blueprint, render_template, Flask, render_template, request, redirect, url_for, session, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from sqlalchemy.exc import SQLAlchemyError
 import hashlib
-import logging
-from app.models import User, Ticket
+from app.models import User
 from app.utils.mysqlconnector import MySqlConnector
 
 base_route = Blueprint('base_route', __name__)
@@ -23,8 +21,8 @@ db = MySqlConnector(server="51.75.25.241", databaseName="TicketsSupport", databa
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
-        password_hash = request.form.get('password_hash')  # Hash envoyé depuis le front
-
+        password_hash = request.form.get('hashed_password')  # Hash envoyé depuis le front
+        
         # Vérifier si l'utilisateur existe
         if not db.user_exist(username):
             return render_template('login.html', error="Identifiants incorrects.")
@@ -34,7 +32,7 @@ def login():
 
         if not stored_hash:
             return render_template('login.html', error="Identifiants incorrects.")
-
+        
         # Vérifier si les hash correspondent
         if password_hash != stored_hash:
             return render_template('login.html', error="Identifiants incorrects.")
@@ -55,7 +53,7 @@ def login():
 
         # Connexion avec Flask-Login
         login_user(user, force=True)
-
+        
         return redirect(url_for('base_route.home'))
 
     return render_template('login.html', error=None)

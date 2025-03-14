@@ -19,36 +19,36 @@
 <div class="sidebar">
   <ul class="sidebar-menu">
     <li>
-      <a href="{{ url_for('base.index') }}" class="{{ 'active' if request.endpoint == 'base.index' }}">
+      <a href="{{ url_for('base_route.home') }}" class="{{ 'active' if request.endpoint == 'base_route.home' }}">
         <i class="fas fa-tachometer-alt"></i> Tableau de bord
       </a>
     </li>
     <li>
-      <a href="{{ url_for('base.tickets') }}" class="{{ 'active' if request.endpoint == 'base.tickets' }}">
+      <a href="{{ url_for('base_route.user_tickets') }}" class="{{ 'active' if request.endpoint == 'base_route.user_tickets' }}">
         <i class="fas fa-ticket-alt"></i> Mes tickets
       </a>
     </li>
     {% if current_user.is_authenticated and current_user.role in ['admin', 'technicien'] %}
     <li>
-      <a href="{{ url_for('base.all_tickets') }}" class="{{ 'active' if request.endpoint == 'base.all_tickets' }}">
+      <a href="{{ url_for('base_route.all_tickets') }}" class="{{ 'active' if request.endpoint == 'base_route.all_tickets' }}">
         <i class="fas fa-clipboard-list"></i> Tous les tickets
       </a>
     </li>
     {% endif %}
     {% if current_user.is_authenticated and current_user.role == 'admin' %}
     <li>
-      <a href="{{ url_for('base.config_users') }}" class="{{ 'active' if request.endpoint == 'base.config_users' }}">
+      <a href="{{ url_for('base_route.config_users') }}" class="{{ 'active' if request.endpoint == 'base_route.config_users' }}">
         <i class="fas fa-users"></i> Gestion utilisateurs
       </a>
     </li>
     <li>
-      <a href="{{ url_for('base.stats') }}" class="{{ 'active' if request.endpoint == 'base.stats' }}">
+      <a href="{{ url_for('base_route.stats') }}" class="{{ 'active' if request.endpoint == 'base_route.stats' }}">
         <i class="fas fa-chart-bar"></i> Statistiques
       </a>
     </li>
     {% endif %}
     <li>
-      <a href="{{ url_for('base.update_user') }}" class="{{ 'active' if request.endpoint == 'base.update_user' }}">
+      <a href="{{ url_for('base_route.update_user') }}" class="{{ 'active' if request.endpoint == 'base_route.update_user' }}">
         <i class="fas fa-user-cog"></i> Mon profil
       </a>
     </li>

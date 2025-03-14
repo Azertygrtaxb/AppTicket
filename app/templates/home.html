@@ -77,7 +77,7 @@
                             </td>
                             <td>{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
                             <td>
-                                <a href="{{ url_for('base.view_ticket', ticket_id=ticket.id) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ url_for('base_route.view_ticket', ticket_id=ticket.id) }}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-eye"></i> Voir
                                 </a>
                             </td>
@@ -88,7 +88,7 @@
             </div>
             {% else %}
             <p>Aucun ticket récent.</p>
-            <a href="{{ url_for('base.tickets') }}" class="btn btn-primary">
+            <a href="{{ url_for('base_route.user_tickets') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Créer un ticket
             </a>
             {% endif %}
