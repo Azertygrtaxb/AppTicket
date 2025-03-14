@@ -1,0 +1,20 @@
+.config-users-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: calc(100% - 250px); /* Adapter à la sidebar */
+    margin-left: 250px; /* Décaler pour éviter la sidebar */
+    padding: 20px;
+}
+
+.config-users-box {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    border: 2px solid #ccc;  
+    margin: auto; /* Centre le formulaire */
+}

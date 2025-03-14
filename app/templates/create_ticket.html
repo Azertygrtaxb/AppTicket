@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+
+{% block title %}Créer un Ticket{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="login-box">
+        <h1 class="app-title">Créer un ticket</h1>
+
+        <!-- Formulaire de création de ticket -->
+        <form id="ticket-form" method="post">
+            <div class="form-group">
+                <label for="title">Titre</label>
+                <input type="text" id="title" name="title" placeholder="Titre du ticket" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" placeholder="Décrivez le problème..." required></textarea>
+            </div>
+
+            <div class="info">
+                <div class="form-group">
+                    <label for="priority">Priorité</label>
+                    <select name="priority">
+                        <option value="faible" selected>Faible</option>
+                        <option value="moyenne">Moyenne</option>
+                        <option value="eleve">Elevée</option>
+                        <option value="critique">Critique</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Catégorie</label>
+                    <select name="category" id="category">
+                        <option value="1">Logiciel</option>
+                        <option value="2">Matériel</option>
+                        <option value="3">Réseau</option>
+                    </select>
+                    
+                </div>
+            </div>
+
+            <!-- Champ caché pour stocker l'ID utilisateur -->
+            <input type="hidden" name="created_by" value="{{ session['user_id'] }}">
+
+            <input type="submit" value="Créer">
+        </form>
+
+        <!-- Affichage des messages de succès / erreur -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}

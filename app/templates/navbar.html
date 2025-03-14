@@ -1,0 +1,25 @@
+<nav class="navbar">
+    <div class="navbar-brand">
+        <i class="fas fa-ticket-alt"></i>
+        <span>AppTicket</span>
+    </div>
+
+    <div class="navbar-links">
+        <a href="{{ url_for('base.index') }}"><i class="fas fa-home"></i> Accueil</a>
+        <a href="{{ url_for('base.tickets') }}"><i class="fas fa-ticket-alt"></i> Tickets</a>
+        <a href="{{ url_for('base.about') }}"><i class="fas fa-info-circle"></i> À propos</a>
+    </div>
+
+    <div class="navbar-profile">
+        {% if current_user.is_authenticated %}
+            <span>{{ current_user.username }}</span>
+            <a href="{{ url_for('base.logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Déconnexion
+            </a>
+        {% else %}
+            <a href="{{ url_for('base.login') }}" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Déconnexion
+            </a>
+        {% endif %}
+    </div>
+</nav>

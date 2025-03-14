@@ -1,0 +1,8 @@
+SQLAlchemy
+pymysql
+bcrypt
+pytest
+Flask
+flask_login
+werkzeug
+cryptography

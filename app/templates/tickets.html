@@ -1,0 +1,227 @@
+{% extends 'layout.html' %}
+
+{% block title %}Mes tickets{% endblock %}
+
+{% block content %}
+<h1>Tickets</h1>
+{% endblock %}
+{% extends 'layout.html' %}
+
+{% block title %}Mes tickets - AppTicket{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Mes tickets</h1>
+    <a href="{{ url_for('base.create_ticket') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nouveau ticket
+    </a>
+</div>
+
+{% if message %}
+<div class="alert alert-{{ message_type|default('success') }}">
+    <i class="fas fa-{{ 'check-circle' if message_type == 'success' else 'exclamation-circle' }}"></i> {{ message }}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-ticket-alt"></i> Liste de mes tickets
+    </div>
+    <div class="card-body">
+        <div class="filter-controls mb-3">
+            <select id="statusFilter" class="form-control" style="width: auto; display: inline-block; margin-right: 10px;">
+                <option value="all">Tous les statuts</option>
+                <option value="open">Ouvert</option>
+                <option value="in-progress">En cours</option>
+                <option value="resolved">Résolu</option>
+                <option value="closed">Fermé</option>
+            </select>
+            
+            <select id="priorityFilter" class="form-control" style="width: auto; display: inline-block;">
+                <option value="all">Toutes les priorités</option>
+                <option value="low">Basse</option>
+                <option value="medium">Moyenne</option>
+                <option value="high">Haute</option>
+            </select>
+        </div>
+        
+        {% if tickets %}
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>#ID</th>
+                        <th>Titre</th>
+                        <th>Statut</th>
+                        <th>Priorité</th>
+                        <th>Date de création</th>
+                        <th>Dernière mise à jour</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                    <tr class="ticket-row" 
+                        data-status="{{ ticket.status|lower|replace(' ', '-') }}"
+                        data-priority="{{ ticket.priority|lower }}">
+                        <td>#{{ ticket.id }}</td>
+                        <td>{{ ticket.title }}</td>
+                        <td>
+                            <span class="status status-{{ ticket.status|lower|replace(' ', '-') }}">
+                                <span class="status-indicator status-indicator-{{ ticket.status|lower|replace(' ', '-') }}"></span>
+                                {{ ticket.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ 'danger' if ticket.priority == 'Haute' else 'warning' if ticket.priority == 'Moyenne' else 'primary' }}">
+                                {{ ticket.priority }}
+                            </span>
+                        </td>
+                        <td>{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ ticket.updated_at.strftime('%d/%m/%Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('base.view_ticket', ticket_id=ticket.id) }}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            {% if ticket.status != 'Fermé' %}
+                            <a href="{{ url_for('base.edit_ticket', ticket_id=ticket.id) }}" class="btn btn-sm btn-secondary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state text-center py-5">
+            <i class="fas fa-ticket-alt fa-3x mb-3" style="color: #ddd;"></i>
+            <h3>Aucun ticket trouvé</h3>
+            <p class="text-muted">Vous n'avez pas encore créé de tickets.</p>
+            <a href="{{ url_for('base.create_ticket') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus"></i> Créer mon premier ticket
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const statusFilter = document.getElementById('statusFilter');
+        const priorityFilter = document.getElementById('priorityFilter');
+        const ticketRows = document.querySelectorAll('.ticket-row');
+        
+        function applyFilters() {
+            const statusValue = statusFilter.value;
+            const priorityValue = priorityFilter.value;
+            
+            ticketRows.forEach(row => {
+                const rowStatus = row.getAttribute('data-status');
+                const rowPriority = row.getAttribute('data-priority');
+                
+                const statusMatch = statusValue === 'all' || rowStatus === statusValue;
+                const priorityMatch = priorityValue === 'all' || rowPriority === priorityValue;
+                
+                if (statusMatch && priorityMatch) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        statusFilter.addEventListener('change', applyFilters);
+        priorityFilter.addEventListener('change', applyFilters);
+    });
+</script>
+{% endblock %}
+{% endblock %}
+{% extends 'layout.html' %}
+
+{% block title %}Tickets - AppTicket{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h1><i class="fas fa-ticket-alt"></i> Tickets</h1>
+    <div class="action-buttons">
+        <button class="btn btn-primary" id="create-ticket-btn">
+            <i class="fas fa-plus"></i> Nouveau Ticket
+        </button>
+    </div>
+</div>
+
+<div class="tickets-container">
+    <div class="filters">
+        <div class="form-group">
+            <label for="status-filter">Statut:</label>
+            <select id="status-filter" class="form-control">
+                <option value="all">Tous</option>
+                <option value="open">Ouvert</option>
+                <option value="in-progress">En cours</option>
+                <option value="resolved">Résolu</option>
+                <option value="closed">Fermé</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="priority-filter">Priorité:</label>
+            <select id="priority-filter" class="form-control">
+                <option value="all">Toutes</option>
+                <option value="high">Haute</option>
+                <option value="medium">Moyenne</option>
+                <option value="low">Basse</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="search">Rechercher:</label>
+            <input type="text" id="search" class="form-control" placeholder="Titre, ID, description...">
+        </div>
+    </div>
+
+    <div class="tickets-list">
+        <div class="ticket-card">
+            <div class="ticket-header">
+                <div class="ticket-id">#1001</div>
+                <div class="status status-open">
+                    <span class="status-indicator status-indicator-open"></span>
+                    Ouvert
+                </div>
+            </div>
+            <div class="ticket-body">
+                <h3 class="ticket-title">Problème de connexion à l'application</h3>
+                <p class="ticket-description">Je n'arrive pas à me connecter à l'application depuis hier...</p>
+            </div>
+            <div class="ticket-footer">
+                <div class="ticket-meta">
+                    <span class="ticket-date"><i class="fas fa-calendar"></i> 15/07/2023</span>
+                    <span class="ticket-priority priority-high"><i class="fas fa-exclamation-circle"></i> Haute</span>
+                </div>
+                <a href="#" class="ticket-link">Voir détails</a>
+            </div>
+        </div>
+
+        <div class="ticket-card">
+            <div class="ticket-header">
+                <div class="ticket-id">#1002</div>
+                <div class="status status-in-progress">
+                    <span class="status-indicator status-indicator-in-progress"></span>
+                    En cours
+                </div>
+            </div>
+            <div class="ticket-body">
+                <h3 class="ticket-title">Problème d'affichage sur la page d'accueil</h3>
+                <p class="ticket-description">Les images ne s'affichent pas correctement sur la page d'accueil...</p>
+            </div>
+            <div class="ticket-footer">
+                <div class="ticket-meta">
+                    <span class="ticket-date"><i class="fas fa-calendar"></i> 16/07/2023</span>
+                    <span class="ticket-priority priority-medium"><i class="fas fa-exclamation-circle"></i> Moyenne</span>
+                </div>
+                <a href="#" class="ticket-link">Voir détails</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

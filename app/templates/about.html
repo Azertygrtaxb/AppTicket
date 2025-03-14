@@ -1,0 +1,57 @@
+{% extends 'layout.html' %}
+
+{% block title %}À propos - AppTicket{% endblock %}
+
+{% block content %}
+<h1>À propos de l'application</h1>
+{% endblock %}
+{% extends 'layout.html' %}
+
+{% block title %}À propos - AppTicket{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-info-circle"></i> À propos d'AppTicket
+    </div>
+    <div class="card-body">
+        <h2>Présentation du Projet AppTicket</h2>
+        
+        <p>L'objectif du projet <strong>AppTicket</strong>, réalisé dans le cadre de notre <strong>BTS SIO</strong>, 
+           est de concevoir et développer une application web de gestion de tickets d'incidents. 
+           Cette application vise à améliorer la gestion des demandes d'assistance et à optimiser 
+           le suivi des problèmes rencontrés par les utilisateurs.</p>
+        
+        <p>Le projet repose sur une architecture <strong>Flask</strong> pour la partie backend, 
+           <strong>SQLAlchemy</strong> et <strong>MySql</strong> pour la gestion des données, 
+           et une interface web facilitant l'interaction avec les utilisateurs.</p>
+        
+        <h3>Principaux fonctionnalités</h3>
+        
+        <ul>
+            <li><strong>Création et gestion des tickets</strong> avec des statuts clairs (ouvert, en cours, résolu, fermé).</li>
+            <li><strong>Authentification et gestion des utilisateurs</strong> avec des rôles distincts (utilisateur, support, administrateur).</li>
+            <li><strong>Système de notifications</strong> (email/SMS) pour informer les utilisateurs des mises à jour sur leurs tickets.</li>
+            <li><strong>Gestion des priorités et assignation des tickets</strong> aux membres du support.</li>
+            <li><strong>Historique et traçabilité</strong> des interventions sur chaque ticket.</li>
+            <li><strong>Tableau de bord et statistiques</strong> pour suivre la performance du support.</li>
+            <li><strong>API REST</strong> permettant l'intégration avec d'autres systèmes internes.</li>
+        </ul>
+        
+        <h3>Architecture technique</h3>
+        
+        <ul>
+            <li><strong>Backend (Flask + SQLAlchemy)</strong> : Gère les routes API, la logique métier et l'accès à la base de données.</li>
+            <li><strong>Base de données (MySQL)</strong> : Stocke les informations des utilisateurs, tickets, et logs d'activités.</li>
+            <li><strong>Frontend (HTML/CSS/JS)</strong> : Fournit une interface utilisateur intuitive et ergonomique.</li>
+            <li><strong>Système de notification (SMTP/SMS)</strong> : Permet d'envoyer des alertes en fonction des actions des utilisateurs.</li>
+            <li><strong>Authentification sécurisée</strong> avec gestion des rôles et permissions.</li>
+        </ul>
+        
+        <div class="text-center mt-4">
+            <p><strong>Version:</strong> 1.0.0</p>
+            <p>© 2023 - AppTicket - Tous droits réservés</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+
+{% extends 'layout.html' %}
+
+{% block title %}Tableau de bord - AppTicket{% endblock %}
+
+{% block content %}
+<h1>Tableau de bord</h1>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-card-icon">
+            <i class="fas fa-ticket-alt"></i>
+        </div>
+        <div class="stat-card-value">{{ total_tickets|default(0) }}</div>
+        <div class="stat-card-title">Total Tickets</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-card-icon">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="stat-card-value">{{ pending_tickets|default(0) }}</div>
+        <div class="stat-card-title">En attente</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-card-icon">
+            <i class="fas fa-spinner"></i>
+        </div>
+        <div class="stat-card-value">{{ in_progress_tickets|default(0) }}</div>
+        <div class="stat-card-title">En cours</div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-card-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-card-value">{{ resolved_tickets|default(0) }}</div>
+        <div class="stat-card-title">Résolus</div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-list"></i> Tickets récents
+        </div>
+        <div class="card-body">
+            {% if recent_tickets %}
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th>Titre</th>
+                            <th>Statut</th>
+                            <th>Priorité</th>
+                            <th>Date de création</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ticket in recent_tickets %}
+                        <tr>
+                            <td>#{{ ticket.id }}</td>
+                            <td>{{ ticket.title }}</td>
+                            <td>
+                                <span class="status status-{{ ticket.status|lower|replace(' ', '-') }}">
+                                    <span class="status-indicator status-indicator-{{ ticket.status|lower|replace(' ', '-') }}"></span>
+                                    {{ ticket.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ 'danger' if ticket.priority == 'Haute' else 'warning' if ticket.priority == 'Moyenne' else 'primary' }}">
+                                    {{ ticket.priority }}
+                                </span>
+                            </td>
+                            <td>{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
+                            <td>
+                                <a href="{{ url_for('base.view_ticket', ticket_id=ticket.id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> Voir
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>Aucun ticket récent.</p>
+            <a href="{{ url_for('base.tickets') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Créer un ticket
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-bell"></i> Notifications récentes
+        </div>
+        <div class="card-body">
+            {% if notifications %}
+            <ul class="notification-list">
+                {% for notification in notifications %}
+                <li class="notification-item">
+                    <div class="notification-icon">
+                        <i class="fas fa-{{ notification.icon|default('bell') }}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p>{{ notification.message }}</p>
+                        <small>{{ notification.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>Aucune notification récente.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

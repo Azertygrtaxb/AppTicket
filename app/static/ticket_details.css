@@ -1,0 +1,75 @@
+/* Conteneur principal */
+.ticket-container {
+    width: 60%;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    border-left: 6px solid #4cae4c; /* Bordure verte pour une touche pro */
+}
+
+/* Titre */
+h1 {
+    text-align: center;
+    font-size: 30px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Informations générales */
+p {
+    font-size: 16px;
+    color: #444;
+    margin: 10px 0;
+}
+
+/* Mise en valeur des labels */
+p strong {
+    color: #4cae4c; /* Met en avant les titres */
+}
+
+/* Boîte de description */
+.description-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f8f0;
+    border-left: 5px solid #4cae4c;
+    border-radius: 8px;
+}
+
+/* Titre de la description */
+.description-box h3 {
+    margin-bottom: 10px;
+    font-size: 22px;
+    color: #333;
+}
+
+/* Texte de la description */
+.description-box p {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #555;
+}
+
+/* Bouton de retour */
+.back-button {
+    display: block;
+    width: fit-content;
+    margin: 20px auto;
+    padding: 12px 25px;
+    background: #4cae4c;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    text-align: center;
+}
+
+.back-button:hover {
+    background: #3a923a;
+    transform: scale(1.05);
+}

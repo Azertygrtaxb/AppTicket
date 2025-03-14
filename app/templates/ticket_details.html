@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+{% block title %}Détails du ticket{% endblock %}
+
+{% block content %}
+<div class="ticket-container">
+    <h1>{{ ticket.title }}</h1>
+
+    <p><strong>Statut :</strong> {{ ticket.status }}</p>
+    <p><strong>Assigné à :</strong> 
+        {% if ticket.User %}
+            {{ ticket.User.username }}
+        {% else %}
+            Non assigné
+        {% endif %}
+    </p>
+    <p><strong>Date de création :</strong> {{ ticket.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+
+    <div class="description-box">
+        <h3>Description :</h3>
+        <p>{{ ticket.description }}</p>
+    </div>
+
+    <a href="{{ url_for('base_route.tickets') }}" class="back-button">⬅ Retour aux tickets</a>
+</div>
+{% endblock %}
