@@ -75,20 +75,6 @@ class MySqlConnector:
             .filter(Ticket.status.in_(["ouvert", "en cours"])).all()
 
     def create_ticket(self, title: str, description: str, created_by: int) -> bool:
-        """Crée un ticket si l'utilisateur existe."""
-        if not self.user_exist(created_by):
-            return False
-
-        try:
-            self.session.add(Ticket(title=title, description=description, created_by=created_by, status="ouvert"))
-            self.session.commit()
-            return True
-        except:
-            self.session.rollback()
-            return False
-
-
-    def create_ticket(self, title: str, description: str, created_by: int) -> bool:
         """Création d'un Ticket"""
         user = self.session.query(User).filter_by(user_id=created_by).first()
         if not user:
@@ -124,16 +110,6 @@ class MySqlConnector:
             self.session.rollback()
             logging.error(f"Erreur lors de l'ajout du commentaire : {e}")
             return False
-
-    def get_tickets_by_user(self, user_id: int):
-        """Récupère tous les tickets d'un utilisateur avec les informations essentielles."""
-        return self.session.query(Ticket.ticket_id, Ticket.title, Ticket.status, Ticket.created_at) \
-            .filter_by(created_by=user_id).all()
-
-    def get_open_tickets(self):
-        """Récupère les tickets avec le statut 'ouvert' ou 'en cours'."""
-        return self.session.query(Ticket.ticket_id, Ticket.title, Ticket.status, Ticket.created_at) \
-            .filter(Ticket.status.in_(["ouvert", "en cours"])).all()
 
     def get_closed_tickets(self):
         """Récupère les tickets fermés."""

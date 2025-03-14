@@ -6,10 +6,9 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 import unittest
 import uuid
-from sqlalchemy.engine.result import Row
 from sqlalchemy import text
 from app.utils.mysqlconnector import MySqlConnector
-from app.models import User, Ticket, Category
+from app.models import User, Ticket
 
 
 class TestMysqlConnector(unittest.TestCase):
@@ -27,7 +26,7 @@ class TestMysqlConnector(unittest.TestCase):
         
         # S'assurer que l'utilisateur est actif au début des tests
         cls.user = cls.connector.session.query(User).filter_by(username=cls.username).first()
-        cls.connector.session.query(User).filter_by(user_id=cls.user.user_id).update({"is_active": True})
+        cls.connector.session.query(User).filter_by(user_id=cls.user.user_id).update({"is_active": int(True)})
         cls.connector.session.commit()
 
     #  Test de la gestion des utilisateurs
@@ -64,8 +63,6 @@ class TestMysqlConnector(unittest.TestCase):
         tickets = self.connector.get_tickets_by_user(user.user_id)
         self.assertTrue(isinstance(tickets, list))
 
-    
-
     def test_get_ticket_summary(self):
         """Vérifie que la fonction retourne uniquement les informations essentielles des tickets."""
         tickets = self.connector.get_ticket_summary()
@@ -101,7 +98,7 @@ class TestMysqlConnector(unittest.TestCase):
         tickets = self.connector.trier_ticket()
         for i in range(len(tickets) - 1):
             self.assertGreaterEqual(tickets[i].created_at, tickets[i + 1].created_at, "Les tickets ne sont pas triés correctement")
-
+    
     #  Test de la gestion de l'état utilisateur (activation/inactivation)
     def test_user_active(self):
         """Teste la vérification si un utilisateur est actif."""
@@ -113,7 +110,7 @@ class TestMysqlConnector(unittest.TestCase):
         user = self.connector.session.query(User).filter_by(username=self.username).first()
         self.connector.user_inactive(user.user_id)
         self.assertFalse(self.connector.user_active(user.user_id))
-
+    
     #  Test d'ajout de commentaire
     def test_add_comment(self):
         """Vérifie qu'on peut ajouter un commentaire à un ticket."""

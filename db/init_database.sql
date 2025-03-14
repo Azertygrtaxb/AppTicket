@@ -8,6 +8,7 @@ CREATE TABLE Users (
     username VARCHAR(50) NOT NULL UNIQUE,
     hashpassword VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
+    #is_active
     role ENUM('user', 'technician', 'admin') NOT NULL DEFAULT 'user',
     phone_number VARCHAR(15) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

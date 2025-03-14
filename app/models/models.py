@@ -1,7 +1,7 @@
 # coding: utf-8
-from sqlalchemy import Column, Enum, ForeignKey, Integer, String, TIMESTAMP, Text, text, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Enum, ForeignKey, Integer, String, TIMESTAMP, Text, text
 from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -12,15 +12,13 @@ class User(Base):
     __tablename__ = 'Users'
 
     user_id = Column(Integer, primary_key=True)
-    username = Column(String(50), nullable=False)
+    username = Column(String(50), nullable=False, unique=True)
     hashpassword = Column(String(255), nullable=False)
     email = Column(String(100), nullable=False, unique=True)
-    role = Column(Enum('user', 'technician', 'admin'), nullable=False)
-    phone_number = Column(String(15), nullable=False)
-    is_active = Column(Boolean, default=True)
-
-    def get_id(self): 
-        return int(self.user_id)  
+    role = Column(Enum('user', 'technician', 'admin'), nullable=False, server_default=text("'user'"))
+    phone_number = Column(String(15))
+    created_at = Column(TIMESTAMP, server_default=text("CURRENT_TIMESTAMP"))
+    is_active = Column(TINYINT(1), server_default=text("'1'"))
 
 
 class Category(Base):
@@ -38,7 +36,7 @@ class Ticket(Base):
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
     status = Column(Enum('ouvert', 'en cours', 'resolu', 'ferme'), server_default=text("'ouvert'"))
-    priority = Column(Enum('faible', 'moyenne', 'eleve', 'critique'), server_default=text("'faible'"))
+    priority = Column(Enum('faible', 'moyenne', 'elevee', 'critique'), server_default=text("'moyenne'"))
     category_id = Column(ForeignKey('categories.category_id', ondelete='SET NULL'), index=True)
     created_by = Column(ForeignKey('Users.user_id', ondelete='CASCADE'), index=True)
     assigned_to = Column(ForeignKey('Users.user_id', ondelete='SET NULL'), index=True)
@@ -48,6 +46,7 @@ class Ticket(Base):
     User = relationship('User', primaryjoin='Ticket.assigned_to == User.user_id')
     category = relationship('Category')
     User1 = relationship('User', primaryjoin='Ticket.created_by == User.user_id')
+
 
 class KnowledgeBase(Base):
     __tablename__ = 'knowledge_base'
