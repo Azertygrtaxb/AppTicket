@@ -1,12 +1,5 @@
 {% extends 'layout.html' %}
 
-{% block title %}Mes tickets{% endblock %}
-
-{% block content %}
-<h1>Tickets</h1>
-{% endblock %}
-{% extends 'layout.html' %}
-
 {% block title %}Mes tickets - AppTicket{% endblock %}
 
 {% block content %}
@@ -138,90 +131,4 @@
     });
 </script>
 {% endblock %}
-{% endblock %}
-{% extends 'layout.html' %}
-
-{% block title %}Tickets - AppTicket{% endblock %}
-
-{% block content %}
-<div class="content-header">
-    <h1><i class="fas fa-ticket-alt"></i> Tickets</h1>
-    <div class="action-buttons">
-        <button class="btn btn-primary" id="create-ticket-btn">
-            <i class="fas fa-plus"></i> Nouveau Ticket
-        </button>
-    </div>
-</div>
-
-<div class="tickets-container">
-    <div class="filters">
-        <div class="form-group">
-            <label for="status-filter">Statut:</label>
-            <select id="status-filter" class="form-control">
-                <option value="all">Tous</option>
-                <option value="open">Ouvert</option>
-                <option value="in-progress">En cours</option>
-                <option value="resolved">Résolu</option>
-                <option value="closed">Fermé</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="priority-filter">Priorité:</label>
-            <select id="priority-filter" class="form-control">
-                <option value="all">Toutes</option>
-                <option value="high">Haute</option>
-                <option value="medium">Moyenne</option>
-                <option value="low">Basse</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="search">Rechercher:</label>
-            <input type="text" id="search" class="form-control" placeholder="Titre, ID, description...">
-        </div>
-    </div>
-
-    <div class="tickets-list">
-        <div class="ticket-card">
-            <div class="ticket-header">
-                <div class="ticket-id">#1001</div>
-                <div class="status status-open">
-                    <span class="status-indicator status-indicator-open"></span>
-                    Ouvert
-                </div>
-            </div>
-            <div class="ticket-body">
-                <h3 class="ticket-title">Problème de connexion à l'application</h3>
-                <p class="ticket-description">Je n'arrive pas à me connecter à l'application depuis hier...</p>
-            </div>
-            <div class="ticket-footer">
-                <div class="ticket-meta">
-                    <span class="ticket-date"><i class="fas fa-calendar"></i> 15/07/2023</span>
-                    <span class="ticket-priority priority-high"><i class="fas fa-exclamation-circle"></i> Haute</span>
-                </div>
-                <a href="#" class="ticket-link">Voir détails</a>
-            </div>
-        </div>
-
-        <div class="ticket-card">
-            <div class="ticket-header">
-                <div class="ticket-id">#1002</div>
-                <div class="status status-in-progress">
-                    <span class="status-indicator status-indicator-in-progress"></span>
-                    En cours
-                </div>
-            </div>
-            <div class="ticket-body">
-                <h3 class="ticket-title">Problème d'affichage sur la page d'accueil</h3>
-                <p class="ticket-description">Les images ne s'affichent pas correctement sur la page d'accueil...</p>
-            </div>
-            <div class="ticket-footer">
-                <div class="ticket-meta">
-                    <span class="ticket-date"><i class="fas fa-calendar"></i> 16/07/2023</span>
-                    <span class="ticket-priority priority-medium"><i class="fas fa-exclamation-circle"></i> Moyenne</span>
-                </div>
-                <a href="#" class="ticket-link">Voir détails</a>
-            </div>
-        </div>
-    </div>
-</div>
 {% endblock %}

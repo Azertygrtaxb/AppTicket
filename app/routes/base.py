@@ -1,10 +1,14 @@
-from flask import Blueprint, render_template, Flask, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, Flask, request, redirect, url_for, session, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 import hashlib
 from app.models import User
 from app.utils.mysqlconnector import MySqlConnector
+from config import DB_PASSWORD, DB_NAME, DB_HOST, DB_USER
 
 base_route = Blueprint('base_route', __name__)
+
+# Connexion à la base de données
+db = MySqlConnector(server=DB_HOST, databaseName=DB_NAME, databaseUser=DB_USER, databasePassword=DB_PASSWORD)
 
 @base_route.route('/')
 @login_required
@@ -14,9 +18,6 @@ def home():
     else:
         return redirect(url_for('login'))
     
-# Connexion à la base de données
-db = MySqlConnector(server="51.75.25.241", databaseName="TicketsSupport", databaseUser="root", databasePassword="rootpassword")
-
 @base_route.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -116,7 +117,8 @@ def update_user():
 @login_required
 def all_tickets():
     if 'username' in session:
-        return render_template('all_tickets.html', username=session['username'], userrole = session['userrole'])
+        tickets = db.get_open_tickets()
+        return render_template('all_tickets.html', username=session['username'], userrole=session['userrole'], tickets=tickets)
     else:
         return redirect(url_for('login'))
         
