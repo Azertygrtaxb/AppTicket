@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, Flask, request, redirect, url_for, session, flash
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-import hashlib
+import logging
 from app.models import User
 from app.utils.mysqlconnector import MySqlConnector
 from config import DB_PASSWORD, DB_NAME, DB_HOST, DB_USER
@@ -95,6 +95,29 @@ def create_ticket():
 
     return render_template('create_ticket.html', error=None, username=session['username'], userrole = session['userrole'])
 
+@base_route.route('/add_comment/<int:ticket_id>', methods=['POST'])
+@login_required
+def add_comment(ticket_id):
+    if 'username' not in session:
+        return redirect(url_for('base_route.login'))
+
+    user_id = int(current_user.get_id())
+    comment = request.form.get('comment')  
+
+    if not comment:
+        flash("Le commentaire ne peut pas être vide.", "error")
+        return redirect(url_for('base_route.view_ticket', ticket_id=ticket_id))
+
+    success = db.add_comment(ticket_id, user_id, comment)
+
+    if success:
+        flash("Commentaire ajouté avec succès.", "success")
+    else:
+        flash("Erreur lors de l'ajout du commentaire.", "error")
+
+    return redirect(url_for('base_route.view_ticket', ticket_id=ticket_id))
+
+
 @base_route.route('/tickets')
 @login_required
 def user_tickets():
@@ -116,11 +139,12 @@ def update_user():
 @base_route.route('/all_tickets')
 @login_required
 def all_tickets():
-    if 'username' in session:
-        tickets = db.get_open_tickets()
-        return render_template('all_tickets.html', username=session['username'], userrole=session['userrole'], tickets=tickets)
-    else:
-        return redirect(url_for('login'))
+    if 'username' not in session:
+        return redirect(url_for('base_route.login'))
+
+    tickets = db.get_open_tickets()  
+
+    return render_template('all_tickets.html', username=session['username'], userrole=session['userrole'], tickets=tickets)
         
 @base_route.route('/config_users', methods=['GET', 'POST'])
 @login_required
@@ -129,15 +153,13 @@ def add_user():
     if request.method == 'POST':
         username = request.form.get('username')
         email = request.form.get('email')
-        password = request.form.get('password')
+        password = request.form.get('hashed_password')
         role = request.form.get('role')
-        phone_number = request.form.get('phone_number')
+        phone_number = request.form.get('phone')
 
-        # Calcul du hash saisi
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
-
+        logging.info('hash : ' + password)
         # Création de l'utilisateur dans la BDD
-        success = db.add_user(username, hashed_password, email, role, phone_number)
+        success = db.add_user(username, password, email, role, phone_number)
 
         if success:
             return redirect(url_for('base_route.home'))
@@ -147,15 +169,34 @@ def add_user():
     return render_template('config_users.html', error=None, username=session['username'], userrole = session['userrole'])
 
 
-
-
-@base_route.route('/assigned_tickets')
+@base_route.route('/assign_ticket', methods=['POST'])
 @login_required
-def assigned_tickets():
-    if 'username' in session:
-        return render_template('assigned_tickets.html', username=session['username'], userrole = session['userrole'])
+def assign_ticket():
+    if 'username' not in session:
+        return redirect(url_for('base_route.login'))
+
+    ticket_id = request.form.get('ticket_id')
+    user_id = request.form.get('user_id')
+
+    if not ticket_id or not user_id:
+        flash("ID du ticket ou de l'utilisateur manquant.", "error")
+        return redirect(url_for('base_route.all_tickets'))
+
+    try:
+        ticket_id = int(ticket_id)
+        user_id = int(user_id)
+    except ValueError:
+        flash("ID invalide.", "error")
+        return redirect(url_for('base_route.all_tickets'))
+
+    success = db.assign_user_to_ticket(ticket_id, user_id)
+
+    if success:
+        flash(f"Le ticket {ticket_id} a été assigné à l'utilisateur {user_id}.", "success")
     else:
-        return redirect(url_for('login'))
+        flash("Échec de l'assignation du ticket.", "error")
+
+    return redirect(url_for('base_route.all_tickets'))
 
 
 @base_route.route('/statistics')
@@ -163,5 +204,24 @@ def assigned_tickets():
 def statistics():
     if 'username' in session:
         return render_template('statistics.html', username=session['username'], userrole = session['userrole'])
+    else:
+        return redirect(url_for('login'))
+
+@base_route.route('/users')
+@login_required
+def all_users():
+    if 'username' not in session:
+        return redirect(url_for('base_route.login'))
+
+    users = db.get_all_users()
+
+    return render_template('users.html', users=users, username=session['username'], userrole=session['userrole'])
+
+
+@base_route.route('/knowledge')
+@login_required
+def knowledge():
+    if 'username' in session:
+        return render_template('about.html', username=session['username'], userrole = session['userrole'])
     else:
         return redirect(url_for('login'))

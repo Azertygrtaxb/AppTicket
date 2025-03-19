@@ -1,20 +1,20 @@
 <nav class="sidebar">
-    <div class="user-info">
-        <span class="username">{{ username }}</span>
-        <span class="userrole">{{ userrole }}</span>
-    </div>
+  <div class="user-info">
+    <span class="username">{{ username }}</span>
+    <span class="userrole">{{ userrole }}</span>
+  </div>
 
-    <ul>
-	{% if userrole == 'user' %}
-		<li><a href="/tickets"> Mes Tickets</a></li>
-	{% elif userrole == 'technician' %}
-		<li><a href="/assigned_tickets">Tickets Assignés</a></li>
-		<li><a href="/statistics">Statistiques</a></li>
-	{% elif userrole == 'admin' %}
-		<li><a href="/all_tickets">Tous les Tickets</a></li>
-		<li><a href="/config_users"> Gestion des Utilisateurs</a></li>
-	{% endif %}
-    </ul>
+  <ul>
+    {% if userrole == 'user' %}
+    <li><a href="/tickets"> Mes Tickets</a></li>
+    {% elif userrole == 'technician' %}
+    <li><a href="/assigned_tickets">Tickets Assignés</a></li>
+    <li><a href="/statistics">Statistiques</a></li>
+    {% elif userrole == 'admin' %}
+    <li><a href="/all_tickets">Tous les Tickets</a></li>
+    <li><a href="/add_user"> Gestion des Utilisateurs</a></li>
+    {% endif %}
+  </ul>
 </nav>
 <div class="sidebar">
   <ul class="sidebar-menu">
@@ -24,31 +24,38 @@
       </a>
     </li>
     <li>
-      <a href="{{ url_for('base_route.user_tickets') }}" class="{{ 'active' if request.endpoint == 'base_route.user_tickets' }}">
+      <a href="{{ url_for('base_route.user_tickets') }}"
+        class="{{ 'active' if request.endpoint == 'base_route.user_tickets' }}">
         <i class="fas fa-ticket-alt"></i> Mes tickets
       </a>
     </li>
-    {% if current_user.is_authenticated and current_user.role in ['admin', 'technicien'] %}
+    {% if userrole in ['admin', 'technician'] %}
     <li>
-      <a href="{{ url_for('base_route.all_tickets') }}" class="{{ 'active' if request.endpoint == 'base_route.all_tickets' }}">
+      <a href="{{ url_for('base_route.all_tickets') }}"
+        class="{{ 'active' if request.endpoint == 'base_route.all_tickets' }}">
         <i class="fas fa-clipboard-list"></i> Tous les tickets
       </a>
     </li>
     {% endif %}
-    {% if current_user.is_authenticated and current_user.role == 'admin' %}
+    <!-- Debug Role: {{ current_user.role if current_user.is_authenticated else 'Non connecté' }} -->
+    <!-- Debug Auth: {{ current_user.is_authenticated }} -->
+    {% if userrole in ['admin'] %}
     <li>
-      <a href="{{ url_for('base_route.config_users') }}" class="{{ 'active' if request.endpoint == 'base_route.config_users' }}">
-        <i class="fas fa-users"></i> Gestion utilisateurs
+      <a href="{{ url_for('base_route.add_user') }}"
+        class="{{ 'active' if request.endpoint == 'base_route.add_user' }}">
+        <i class="fas fa-users-cog"></i> Gestion utilisateurs
       </a>
     </li>
     <li>
-      <a href="{{ url_for('base_route.stats') }}" class="{{ 'active' if request.endpoint == 'base_route.stats' }}">
+      <a href="{{ url_for('base_route.statistics') }}"
+        class="{{ 'active' if request.endpoint == 'base_route.statistics' }}">
         <i class="fas fa-chart-bar"></i> Statistiques
       </a>
     </li>
     {% endif %}
     <li>
-      <a href="{{ url_for('base_route.update_user') }}" class="{{ 'active' if request.endpoint == 'base_route.update_user' }}">
+      <a href="{{ url_for('base_route.update_user') }}"
+        class="{{ 'active' if request.endpoint == 'base_route.update_user' }}">
         <i class="fas fa-user-cog"></i> Mon profil
       </a>
     </li>

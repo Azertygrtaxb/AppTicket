@@ -1,109 +1,147 @@
-
 {% extends 'layout.html' %}
 
 {% block title %}Gestion des utilisateurs - AppTicket{% endblock %}
 
 {% block content %}
-<h1>Gestion des utilisateurs</h1>
+{% if userrole in ['admin'] %}
+<div class="container">
+    <h1><i class="fas fa-users-cog"></i> Gestion des utilisateurs</h1>
 
-{% if message %}
-<div class="alert alert-{{ message_type|default('success') }}">
-    <i class="fas fa-{{ 'check-circle' if message_type == 'success' else 'exclamation-circle' }}"></i> {{ message }}
-</div>
-{% endif %}
+    {% if message %}
+    <div class="alert alert-{{ message_type|default('success') }}">
+        <i class="fas fa-{{ 'check-circle' if message_type == 'success' else 'exclamation-circle' }}"></i> {{ message }}
+    </div>
+    {% endif %}
 
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-user-plus"></i> Ajouter un nouvel utilisateur
-    </div>
-    <div class="card-body">
-        <form method="POST" action="{{ url_for('base_route.add_user') }}">
-            <div class="row">
-                <div class="form-group">
-                    <label for="username">Nom d'utilisateur</label>
-                    <input type="text" id="username" name="username" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" id="password" name="password" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="phone">Téléphone</label>
-                    <input type="tel" id="phone" name="phone" class="form-control">
-                </div>
-                
-                <div class="form-group">
-                    <label for="role">Rôle</label>
-                    <select id="role" name="role" class="form-control" required>
-                        <option value="user">Utilisateur</option>
-                        <option value="technicien">Technicien</option>
-                        <option value="admin">Administrateur</option>
-                    </select>
-                </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Ajouter l'utilisateur
-            </button>
-        </form>
-    </div>
-</div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-user-plus"></i> Ajouter un nouvel utilisateur
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('base_route.add_user') }}" class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="username">Nom d'utilisateur</label>
+                        <input type="text" id="username" name="username" class="form-control" required>
+                    </div>
 
-<div class="card">
-    <div class="card-header">
-        <i class="fas fa-users"></i> Liste des utilisateurs
-    </div>
-    <div class="card-body">
-        <div class="table-container">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nom d'utilisateur</th>
-                        <th>Email</th>
-                        <th>Téléphone</th>
-                        <th>Rôle</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in users %}
-                    <tr>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.phone_number }}</td>
-                        <td>
-                            <span class="badge badge-{{ 'primary' if user.role == 'user' else 'warning' if user.role == 'technicien' else 'danger' }}">
-                                {{ user.role|capitalize }}
-                            </span>
-                        </td>
-                        <td>
-                            <a href="{{ url_for('base_route.edit_user', user_id=user.id) }}" class="btn btn-sm btn-primary">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="btn btn-sm btn-danger" onclick="confirmDelete('{{ user.id }}', '{{ user.username }}')">
-                                <i class="fas fa-trash"></i>
+                    <div class="col-md-6 mb-3">
+                        <label for="password">Mot de passe</label>
+                        <div class="input-group">
+                            <input type="password" id="password" name="password" class="form-control" required>
+                            <button type="button" class="btn btn-outline-secondary"
+                                onclick="togglePasswordVisibility('password')">
+                                <i class="fas fa-eye"></i>
                             </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="phone">Téléphone</label>
+                        <input type="tel" id="phone" name="phone" class="form-control" pattern="[0-9]{10}">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="role">Rôle</label>
+                        <select id="role" name="role" class="form-control" required>
+                            <option value="user">Utilisateur</option>
+                            <option value="technician">Technicien</option>
+                            <option value="admin">Administrateur</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Ajouter l'utilisateur
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <i class="fas fa-users"></i> Liste des utilisateurs
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nom d'utilisateur</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th>Téléphone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.role }}</td>
+                            <td>{{ user.phone_number }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="toggleUserStatus('{{ user.user_id }}')">
+                                    <i class="fas fa-power-off"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <script>
-    function confirmDelete(userId, username) {
-        if (confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${username} ?`)) {
-            window.location.href = `{{ url_for('base_route.delete_user', user_id='') }}${userId}`;
+    document.querySelector('form').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const password = document.getElementById('password').value;
+        // Hash password with SHA-256 before sending
+        const hashedPassword = CryptoJS.SHA256(password).toString();
+
+        // Create a hidden field for the hashed password
+        const hiddenField = document.createElement('input');
+        hiddenField.type = 'hidden';
+        hiddenField.name = 'hashed_password';
+        hiddenField.value = hashedPassword;
+        this.appendChild(hiddenField);
+
+        // Clear the original password field
+        document.getElementById('password').value = '';
+
+        // Submit the form
+        this.submit();
+    });
+
+    function togglePasswordVisibility(inputId) {
+        const input = document.getElementById(inputId);
+        const icon = input.nextElementSibling.querySelector('i');
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
         }
     }
 </script>
+{% else %}
+<div class="container">
+    <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle"></i> Accès non autorisé. Cette page est réservée aux administrateurs.
+    </div>
+</div>
+{% endif %}
 {% endblock %}

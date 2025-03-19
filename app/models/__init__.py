@@ -1,1 +1,1 @@
-from .models import Base, User, Ticket, TicketComment, Category
+from .models import Base, User, Ticket, TicketComment, Category , KnowledgeBase
