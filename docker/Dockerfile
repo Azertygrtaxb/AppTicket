@@ -8,7 +8,6 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 COPY app/ app/
 COPY run.py run.py
-COPY app/config.py config.py
 
 # Installe les dépendances
 RUN pip install --no-cache-dir -r requirements.txt

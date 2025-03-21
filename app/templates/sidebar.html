@@ -6,23 +6,29 @@
 
   <ul>
     {% if userrole == 'user' %}
-    <li><a href="/tickets"> Mes Tickets</a></li>
-    {% elif userrole == 'technician' %}
+    <li><a href="/tickets">Mes Tickets</a></li>
+    {% elif userrole in ['technician', 'admin'] %}
+    <li><a href="/"><i class="fas fa-tachometer-alt"></i> Tableau de bord</a></li>
+    {% if userrole == 'technician' %}
     <li><a href="/assigned_tickets">Tickets Assignés</a></li>
     <li><a href="/statistics">Statistiques</a></li>
-    {% elif userrole == 'admin' %}
+    {% endif %}
+    {% if userrole == 'admin' %}
     <li><a href="/all_tickets">Tous les Tickets</a></li>
-    <li><a href="/add_user"> Gestion des Utilisateurs</a></li>
+    <li><a href="/add_user">Gestion des Utilisateurs</a></li>
+    {% endif %}
     {% endif %}
   </ul>
 </nav>
 <div class="sidebar">
   <ul class="sidebar-menu">
+    {% if userrole in ['admin', 'technician'] %}
     <li>
       <a href="{{ url_for('base_route.home') }}" class="{{ 'active' if request.endpoint == 'base_route.home' }}">
         <i class="fas fa-tachometer-alt"></i> Tableau de bord
       </a>
     </li>
+    {% endif %}
     <li>
       <a href="{{ url_for('base_route.user_tickets') }}"
         class="{{ 'active' if request.endpoint == 'base_route.user_tickets' }}">
@@ -37,8 +43,6 @@
       </a>
     </li>
     {% endif %}
-    <!-- Debug Role: {{ current_user.role if current_user.is_authenticated else 'Non connecté' }} -->
-    <!-- Debug Auth: {{ current_user.is_authenticated }} -->
     {% if userrole in ['admin'] %}
     <li>
       <a href="{{ url_for('base_route.add_user') }}"

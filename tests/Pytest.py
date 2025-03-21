@@ -121,6 +121,16 @@ class TestMysqlConnector(unittest.TestCase):
         users = self.connector.get_all_users()
         self.assertTrue(len(users) > 0)
 
+    def test_update_role_users(self):
+        new_role = "admin"
+        success = self.connector.update_user_role(self.username, new_role)
+        self.assertTrue(success)
+
+
+
+
+        
+
     def test_close_ticket(self):
         user = self.connector.session.query(User).filter_by(username=self.username).first()
         new_ticket = Ticket(title="Ticket à fermer", description="Description", created_by=user.user_id, status="ouvert")

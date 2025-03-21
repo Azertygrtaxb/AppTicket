@@ -1,125 +1,93 @@
-{% extends 'layout.html' %}
+{% extends "layout.html" %}
 
 {% block title %}Tableau de bord - AppTicket{% endblock %}
-<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
 {% block content %}
-<h1>Tableau de bord</h1>
+{% if userrole not in ['admin', 'technician'] %}
+<script>
+    window.location.href = "{{ url_for('base_route.user_tickets') }}";
+</script>
+{% else %}
+<div class="container">
+    <h1><i class="fas fa-tachometer-alt"></i> Tableau de bord</h1>
 
-<div class="stats-container">
-    <div class="stat-card">
-        <div class="stat-card-icon">
-            <i class="fas fa-ticket-alt"></i>
-        </div>
-        <div class="stat-card-value">{{ total_tickets|default(0) }}</div>
-        <div class="stat-card-title">Total Tickets</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-card-icon">
-            <i class="fas fa-clock"></i>
-        </div>
-        <div class="stat-card-value">{{ pending_tickets|default(0) }}</div>
-        <div class="stat-card-title">En attente</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-card-icon">
-            <i class="fas fa-spinner"></i>
-        </div>
-        <div class="stat-card-value">{{ in_progress_tickets|default(0) }}</div>
-        <div class="stat-card-title">En cours</div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-card-icon">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="stat-card-value">{{ resolved_tickets|default(0) }}</div>
-        <div class="stat-card-title">Résolus</div>
-    </div>
-</div>
-
-<div class="row">
-    <div class="card">
-        <div class="card-header">
-            <i class="fas fa-list"></i> Tickets récents
-        </div>
-        <div class="card-body">
-            {% if recent_tickets %}
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>#ID</th>
-                            <th>Titre</th>
-                            <th>Statut</th>
-                            <th>Priorité</th>
-                            <th>Date de création</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for ticket in recent_tickets %}
-                        <tr>
-                            <td>#{{ ticket.id }}</td>
-                            <td>{{ ticket.title }}</td>
-                            <td>
-                                <span class="status status-{{ ticket.status|lower|replace(' ', '-') }}">
-                                    <span
-                                        class="status-indicator status-indicator-{{ ticket.status|lower|replace(' ', '-') }}"></span>
-                                    {{ ticket.status }}
-                                </span>
-                            </td>
-                            <td>
-                                <span
-                                    class="badge badge-{{ 'danger' if ticket.priority == 'Haute' else 'warning' if ticket.priority == 'Moyenne' else 'primary' }}">
-                                    {{ ticket.priority }}
-                                </span>
-                            </td>
-                            <td>{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
-                            <td>
-                                <a href="{{ url_for('base_route.view_ticket', ticket_id=ticket.id) }}"
-                                    class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> Voir
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-card-icon">
+                <i class="fas fa-ticket-alt"></i>
             </div>
-            {% else %}
-            <p>Aucun ticket récent.</p>
-            <a href="{{ url_for('base_route.user_tickets') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Créer un ticket
-            </a>
-            {% endif %}
+            <div class="stat-card-value">{{ tickets_count if tickets_count else 0 }}</div>
+            <div class="stat-card-title">Total Tickets</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-icon">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-card-value">{{ pending_count if pending_count else 0 }}</div>
+            <div class="stat-card-title">En attente</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-icon">
+                <i class="fas fa-spinner"></i>
+            </div>
+            <div class="stat-card-value">{{ in_progress_count if in_progress_count else 0 }}</div>
+            <div class="stat-card-title">En cours</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-card-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-card-value">{{ resolved_count if resolved_count else 0 }}</div>
+            <div class="stat-card-title">Résolus</div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <i class="fas fa-bell"></i> Notifications récentes
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bell"></i> Notifications récentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                        <div class="notification-item">
+                            <span class="notification-message">{{ notification.message }}</span>
+                            <small class="text-muted">{{ notification.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucune notification récente</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            {% if notifications %}
-            <ul class="notification-list">
-                {% for notification in notifications %}
-                <li class="notification-item">
-                    <div class="notification-icon">
-                        <i class="fas fa-{{ notification.icon|default('bell') }}"></i>
-                    </div>
-                    <div class="notification-content">
-                        <p>{{ notification.message }}</p>
-                        <small>{{ notification.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
-                    </div>
-                </li>
-                {% endfor %}
-            </ul>
-            {% else %}
-            <p>Aucune notification récente.</p>
-            {% endif %}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-ticket-alt"></i> Tickets récents</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_tickets %}
+                        {% for ticket in recent_tickets %}
+                        <div class="ticket-item">
+                            <span class="ticket-title">#{{ ticket.ticket_id }} - {{ ticket.title }}</span>
+                            <span class="badge badge-{{ 'danger' if ticket.priority == 'critique' else 'warning' if ticket.priority == 'elevee' else 'primary' }}">
+                                {{ ticket.priority }}
+                            </span>
+                            <small class="text-muted">{{ ticket.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aucun ticket récent</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}

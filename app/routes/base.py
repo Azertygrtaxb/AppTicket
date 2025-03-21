@@ -3,7 +3,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 import logging
 from app.models import User
 from app.utils.mysqlconnector import MySqlConnector
-from config import DB_PASSWORD, DB_NAME, DB_HOST, DB_USER
+from app.utils.config import DB_PASSWORD, DB_NAME, DB_HOST, DB_USER
 
 base_route = Blueprint('base_route', __name__)
 

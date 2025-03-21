@@ -11,9 +11,11 @@ class MySqlConnector:
         self.engine = create_engine(self.DATABASE_URL)
         self.session = sessionmaker(bind=self.engine)()
 
+    
     def create_tables(self):
         Base.metadata.create_all(self.engine)
         logging.info("Tables créées avec succès.")
+        
 
     def close(self):
         self.session.close()
@@ -21,6 +23,7 @@ class MySqlConnector:
 
     def user_exist(self, username: str) -> bool:
         return self.session.query(User).filter_by(username=username).first() is not None
+    
 
     def get_user_hash(self, username: str):
         user = self.session.query(User).filter_by(username=username).first()
@@ -140,6 +143,17 @@ class MySqlConnector:
             Ticket.created_at
         ).filter(cond).all()
 
+    def update_user_role(self, username: str, new_role: str):
+        user = self.session.query(User).filter_by(username=username).first()
+        if user:
+            user.role = new_role
+            self.session.commit()
+            logging.info(f"Rôle de {username} mis à jour en {new_role}.")
+            return True
+        logging.error(f"Utilisateur {username} non trouvé.")
+        return False
+
+        
     def get_all_users(self):
         return self.session.query(User).all()
 
