@@ -6,5 +6,4 @@ Flask
 flask_login
 werkzeug
 cryptography
-dotenv
 python-dotenv

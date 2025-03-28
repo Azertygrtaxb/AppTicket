@@ -1,0 +1,48 @@
+
+{% extends "layout.html" %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Liste des utilisateurs</h1>
+  
+  <div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+      <h3 class="card-title">Utilisateurs</h3>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nom d'utilisateur</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Téléphone</th>
+              <th>Statut</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user.user_id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.role }}</td>
+              <td>{{ user.phone_number }}</td>
+              <td>{{ "Actif" if user.is_active else "Inactif" }}</td>
+              <td>
+                <a href="{{ url_for('base_route.assign_ticket', user_id=user.user_id) }}" class="btn btn-sm btn-primary">Assigner un ticket</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

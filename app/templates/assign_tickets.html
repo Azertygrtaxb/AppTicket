@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block title %}Assigner un ticket{% endblock %}
+
+{% block content %}
+<div class="container">
+  <h1>Assigner un ticket à {{ user.username }}</h1>
+
+  <div class="card mt-4">
+    <div class="card-header bg-primary text-white">
+      <h3 class="card-title">Tickets disponibles</h3>
+    </div>
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('base_route.assign_ticket', user_id=user.user_id) }}">
+        <div class="form-group">
+          <label for="ticket_id">Sélectionner un ticket</label>
+          <select class="form-control" id="ticket_id" name="ticket_id" required>
+            <option value="">-- Choisir un ticket --</option>
+            {% for ticket in tickets %}
+              <option value="{{ ticket.ticket_id }}">{{ ticket.title }} - {{ ticket.status }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Assigner</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -3,6 +3,11 @@
 {% block title %}Tous les tickets - AppTicket{% endblock %}
 
 {% block content %}
+{% if userrole not in ['admin', 'technician'] %}
+<script>
+    window.location.href = "{{ url_for('base_route.user_tickets') }}";
+</script>
+{% else %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1><i class="fas fa-clipboard-list"></i> Tous les tickets</h1>
 </div>
@@ -33,21 +38,23 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th>#</th>
                         <th>Titre</th>
                         <th>Créé par</th>
                         <th>Assigné à</th>
                         <th>Statut</th>
                         <th>Priorité</th>
-                        <th>Date de création</th>
+                        <th>Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for ticket in tickets %}
                     <tr class="ticket-row" data-status="{{ ticket.status }}" data-priority="{{ ticket.priority }}">
+                        <td>#{{ ticket.ticket_id }}</td>
                         <td>{{ ticket.title }}</td>
-                        <td>{{ ticket.User1.username }}</td>
-                        <td>{{ ticket.User.username if ticket.User else 'Non assigné' }}</td>
+                        <td>{{ ticket.created_by_username }}</td>
+                        <td>{{ ticket.assigned_to_username or 'Non assigné' }}</td>
                         <td>
                             <span class="status status-{{ ticket.status }}">
                                 <span class="status-indicator status-indicator-{{ ticket.status }}"></span>
@@ -61,10 +68,10 @@
                         </td>
                         <td>{{ ticket.created_at.strftime('%d/%m/%Y') }}</td>
                         <td>
-                            <a href="{{ url_for('base_route.ticket_details', ticket_id=ticket.ticket_id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ url_for('base_route.all_tickets', ticket_id=ticket.ticket_id) }}" class="btn btn-sm btn-primary">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            {% if current_user.is_admin %}
+                            {% if userrole == 'admin' %}
                             <button onclick="confirmCloseTicket({{ ticket.ticket_id }})" class="btn btn-sm btn-danger">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -77,6 +84,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

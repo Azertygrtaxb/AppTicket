@@ -3,7 +3,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-
+import logging
 import unittest
 import uuid
 from sqlalchemy import text
@@ -77,7 +77,6 @@ class TestMysqlConnector(unittest.TestCase):
         tickets = self.connector.get_closed_tickets()
         self.assertTrue(all(ticket[2] == "ferme" for ticket in tickets))
 
-
     def test_sort_tickets_by_date(self):
         tickets = self.connector.trier_ticket()
         for i in range(len(tickets) - 1):
@@ -126,10 +125,51 @@ class TestMysqlConnector(unittest.TestCase):
         success = self.connector.update_user_role(self.username, new_role)
         self.assertTrue(success)
 
+    def test_update_user_info(self):
+        new_email = "updated_email@example.com"
+        new_phone = "0606060606"
+        new_hash = "updated_hashed_password"
 
+        success = self.connector.update_user_info(
+            username=self.username,
+            hashed_password=new_hash,
+            email=new_email,
+            phone_number=new_phone
+        )
 
+        self.assertTrue(success)
 
+        updated_user = self.connector.session.query(User).filter_by(username=self.username).first()
+        self.assertEqual(updated_user.email, new_email)
+        self.assertEqual(updated_user.phone_number, new_phone)
+        self.assertEqual(updated_user.hashpassword, new_hash)
+
+        # ✅ **Réinitialisation pour que test_get_user_hash() passe**
+        self.connector.update_user_info(
+            username=self.username,
+            hashed_password="hashed_password",
+            email=new_email,
+            phone_number=new_phone
+        )
+
+    def test_return_number_of_tickets(self):
+        user = self.connector.session.query(User).filter_by(username=self.username).first()
         
+        # Crée quelques tickets avec différents statuts
+        statuses = ["ouvert", "en cours", "resolu", "ferme"]
+        for status in statuses:
+            ticket = Ticket(title=f"Test {status}", description="Test desc", created_by=user.user_id, status=status)
+            self.connector.session.add(ticket)
+        self.connector.session.commit()
+
+        # Appel de la méthode à tester
+        counts = self.connector.return_number_of_tickets()
+
+        # Vérifie que tous les statuts existent dans le résultat
+        for status in statuses:
+            self.assertIn(status, counts)
+            self.assertGreaterEqual(counts[status], 1)
+
 
     def test_close_ticket(self):
         user = self.connector.session.query(User).filter_by(username=self.username).first()
@@ -171,9 +211,37 @@ class TestMysqlConnector(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        # Nettoyage de la base après les tests
-        cls.connector.session.execute(text(f"DELETE FROM Users WHERE username = '{cls.username}'"))
-        cls.connector.close()
+        """ Nettoyage de la base après les tests """
+        try:
+            cls.connector.session.execute(
+                text("DELETE FROM Users WHERE username = :username"),
+                {"username": cls.username}
+            )
+            cls.connector.session.commit()
+            logging.info(f"Utilisateur de test '{cls.username}' supprimé.")
+        except Exception as e:
+            cls.connector.session.rollback()
+            logging.error(f"Erreur lors du nettoyage : {e}")
+        finally:
+            cls.connector.close()
+
+    @classmethod
+    def clean_test_users(cls):
+        """
+        Supprime les utilisateurs de test (commençant par 'user_' ou 'test_user'),
+        sauf l'admin principal (user_id = 1).
+        """
+        try:
+            cls.connector.session.execute(text("""
+                DELETE FROM Users
+                WHERE user_id != 1
+                AND (username LIKE 'user_%' OR username = 'test_user')
+            """))
+            cls.connector.session.commit()
+            logging.info("Utilisateurs de test supprimés (hors admin principal).")
+        except Exception as e:
+            cls.connector.session.rollback()
+            logging.error(f"Erreur lors du nettoyage des utilisateurs de test : {e}")
 
 if __name__ == '__main__':
     unittest.main()
